@@ -25,16 +25,39 @@ df['JungleMinionsDiff']=df['blueTotalJungleMinionsKilled']-df['redTotalJungleMin
 df['CSdiff']=df['blueCSPerMin']-df['redCSPerMin']
 df['GPMdiff']=df['blueGoldPerMin']-df['redGoldPerMin']
 
-relevant=['blueWins','WardPlaceDiff','WardDestroyDiff','FirstBloodDiff','KillDiff','DeathDiff',
-                    'AssistDiff','EliteMonsterDiff','DragonDiff','HeraldDiff','TowerDestroyDiff',
-                    'AvgLevelDiff','MinionsDiff','JungleMinionsDiff','blueGoldDiff','blueExperienceDiff',
-                    'CSdiff','GPMdiff']
+relevant=['blueWins',
+          # 'WardPlaceDiff',
+          # 'WardDestroyDiff',
+          # 'FirstBloodDiff',
+          'KillDiff',
+          'DeathDiff',
+          # 'AssistDiff',
+          'EliteMonsterDiff',
+          'DragonDiff',
+          # 'HeraldDiff',
+          # 'TowerDestroyDiff',
+          'AvgLevelDiff',
+          'MinionsDiff',
+          #'JungleMinionsDiff',
+          'blueGoldDiff',
+          'blueExperienceDiff',
+          'CSdiff',
+          'GPMdiff'
+          ]
 
+# ANALYSIS
+print (df[relevant].groupby(by='blueWins').mean().T)
 # SPLITTING DATA BETWEEN TRAINING AND TESTING AND SCALING
 
 dados = df[relevant]
 
-dados_embaralhados=dados.sample(frac=1, random_state = 143)
+dados_embaralhados=dados.sample(frac=1, random_state=4234)
+scaler2 = MaxAbsScaler()
+scaler2.fit(dados)
+analisedados=scaler2.transform(dados)
+analisedf = pd.DataFrame(data=analisedados)
+print (pd.DataFrame(data=analisedados).groupby(by=0).mean().T)
+
 
 x = dados_embaralhados.loc[:,dados_embaralhados.columns!='blueWins'].values
 y = dados_embaralhados.loc[:,dados_embaralhados.columns=='blueWins'].values
@@ -55,55 +78,7 @@ x_treino = scaler.transform(x_treino)
 x_teste = scaler.transform(x_teste)
 
 
-#BUILDING THE CLASSIFIER
-
-classificador = KNeighborsClassifier(n_neighbors=5)
-
-classificador = classificador.fit(x_treino, y_treino)
-
-#-------------------------------------------------------------------------------
-# TESTING THE CLASSIFIER WITH THE TRAINING SET
-#-------------------------------------------------------------------------------
-
-y_resposta_treino = classificador.predict(x_treino)
-
-#-------------------------------------------------------------------------------
-# OBTAINING THE TEST SET PREDICTIONS
-#-------------------------------------------------------------------------------
-
-y_resposta_teste = classificador.predict(x_teste)
-
-#-------------------------------------------------------------------------------
-# VERIFYING ACCURACY
-#-------------------------------------------------------------------------------
-
-print ("\nPERFORMANCE INSIDE TRAINING SET\n")
-
-total   = len(y_treino)
-acertos = sum(y_resposta_treino==y_treino)
-erros   = sum(y_resposta_treino!=y_treino)
-
-print ("Total samples: " , total)
-print ("Correct predictions:" , acertos)
-print ("Wrong predictions: " , erros)
-
-acuracia = acertos / total
-
-print ("Accuracy = %.1f %%" % (100*acuracia))
-
-print ("\nPERFORMANCE OUTSIDE TRAINING SET\n")
-
-total   = len(y_teste)
-acertos = sum(y_resposta_teste==y_teste)
-erros   = sum(y_resposta_teste!=y_teste)
-
-print ("Total samples: " , total)
-print ("Correct predictions:" , acertos)
-print ("Wrong predictions: " , erros)
-
-acuracia = acertos / total
-
-print ("Accuracy = %.1f %%" % (100*acuracia))
+#
 
 #-------------------------------------------------------------------------------
 # VERIFYING ACCURACY FOR DIFFERENT K VALUES
@@ -112,7 +87,7 @@ print ("Accuracy = %.1f %%" % (100*acuracia))
 print ( "\n  K TRAINING  TEST")
 print ( " -- ------ ------")
 
-for k in range(15,35):
+for k in range(20,60,1):
 
     classificador = KNeighborsClassifier(
         n_neighbors = k,
@@ -133,6 +108,7 @@ for k in range(15,35):
         "%6.1f" % (100*acuracia_teste)
         )
     
+    # CURRENT BEST: 73,7% K = 48
     
 
 
