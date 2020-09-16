@@ -6,4 +6,4 @@ This project's objective is to predict, based on game data of the first 10 minut
 
 The design choices, feature engineering and further explanation can be viewed at my corresponding Kaggle notebook for this project:
 
-https://www.kaggle.com/wallacecorrea/league-of-legends-match-result-prediction
+https://www.kaggle.com/wallacecorrea/knn-modeling-for-match-result-prediction-73
